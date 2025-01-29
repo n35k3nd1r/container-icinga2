@@ -12,6 +12,10 @@ jobs:
   build:
     name: Build and push image
     runs-on: ubi8  # Self-hosted Runner nutzen 
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     
     steps:
     - name: Checkout Repository
