@@ -1,5 +1,8 @@
 name: Build and Push Image
-on: [ push ]
+on:
+  push:
+    branches:
+      - main
 
 env:
   REGISTRY: ghcr.io
@@ -24,7 +27,7 @@ jobs:
           ./Containerfile
           
     - name: Push To ${{ env.REGISTRY }}
-      id: push-to-${{ env.REGISTRY }}
+      id: push-to-registry
       uses: redhat-actions/push-to-registry@v2
       with:
         image: ${{ steps.build-image.outputs.image }}
@@ -34,4 +37,4 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Print image url
-      run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
+      run: echo "Image pushed to ${{ steps.push-to-registry.outputs.registry-paths }}"
