@@ -1,48 +1,37 @@
-name: Build and Push Container
-
-on:
-  push:
-    branches:
-      - main
+name: Build and Push Image
+on: [ push ]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push:
+  build:
+    name: Build and push image
     runs-on: ubi8  # Self-hosted Runner nutzen 
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
+    
     steps:
-      - name: Checkout Repository mit Containerfile
-        uses: actions/checkout@v4
-        
-      - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+  
+    - name: Build Image
+      id: build-image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: ${{ env.IMAGE_NAME }}
+        tags: latest ${{ github.sha }}
+        containerfiles: |
+          ./Containerfile
           
-      - name: Checkout Repository mit Containerfile
-        uses: actions/checkout@v4
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Push To ${{ env.REGISTRY }}
+      id: push-to-${{ env.REGISTRY }}
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ steps.build-image.outputs.image }}
+        tags: ${{ steps.build-image.outputs.tags }}
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Login to Container Registry (GitHub Container Registry)
-        run: |
-          echo "${{ secrets.GHCR_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Build Container Image with Podman
-        run: |
-          podman build -t ghcr.io/${{ github.repository_owner }}/my-container:latest -f ./build/containerfile .
-
-      - name: Push Image to GitHub Container Registry
-        run: |
-          podman push ghcr.io/${{ github.repository_owner }}/my-container:latest
+    - name: Print image url
+      run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
