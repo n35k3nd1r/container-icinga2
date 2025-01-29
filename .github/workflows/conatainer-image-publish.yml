@@ -30,7 +30,7 @@ jobs:
         containerfiles: |
           ./Containerfile
           
-    - name: Push To ${{ env.REGISTRY }}
+    - name: Push To Registry
       id: push-to-registry
       uses: redhat-actions/push-to-registry@v2
       with:
