@@ -25,8 +25,7 @@ jobs:
       run: |
         sed -i "s|username=|username=${{ secrets.ICINGA_USERNAME }}|g" ./src/etc/yum.repos.d/ICINGA.repo
         sed -i "s|password=|password=${{ secrets.ICINGA_PASSWORD }}|g" ./src/etc/yum.repos.d/ICINGA.repo
-        sed -i "s|username=|username=${{ secrets.RH_USERNAME  }}|g" ./src/etc/yum.repos.d/redhat.repo
-        sed -i "s|password=|password=${{ secrets.RH_PASSWORD  }}|g" ./src/etc/yum.repos.d/redhat.repo
+        echo "${{ secrets.RH_CLIENT_KEY }}" | tee ./src/etc/pki/entitlement/client-key.pem > /dev/null
     
     - name: Build Image
       id: build-base-image
