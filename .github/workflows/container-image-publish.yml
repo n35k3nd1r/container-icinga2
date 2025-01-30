@@ -42,9 +42,9 @@ jobs:
 
     - name: Repositority Configuration
       run: |
-        sed -i "s|username=|username=${{ secrets.ICINGA_USERNAME }}|g" ./src/Base/etc/yum.repos.d/ICINGA.repo
-        sed -i "s|password=|password=${{ secrets.ICINGA_PASSWORD }}|g" ./src/Base/etc/yum.repos.d/ICINGA.repo
-        echo "${{ secrets.RH_CLIENT_KEY }}" | tee ./src/Base/etc/pki/entitlement/client-key.pem > /dev/null
+        sed -i "s|username=|username=${{ secrets.ICINGA_USERNAME }}|g" ./src/${{ env.IMAGE_NAME_BASE }}/etc/yum.repos.d/ICINGA.repo
+        sed -i "s|password=|password=${{ secrets.ICINGA_PASSWORD }}|g" ./src/${{ env.IMAGE_NAME_BASE }}/etc/yum.repos.d/ICINGA.repo
+        echo "${{ secrets.RH_CLIENT_KEY }}" | tee ./src/${{ env.IMAGE_NAME_BASE }}/etc/pki/entitlement/client-key.pem > /dev/null
     
     - name: Build Base Image
       id: build-base-image
