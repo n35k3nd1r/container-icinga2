@@ -20,7 +20,12 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-  
+    
+    - name: Setze ICINGA Zugangsdaten
+      run: |
+        sed -i "s|username=|username=${{ secrets.ICINGA_USERNAME }}|g" ./build/ICINGA-release.repo
+        sed -i "s|password=|password=${{ secrets.ICINGA_PASSWORD }}|g" ./build/ICINGA-release.repo
+    
     - name: Build Image
       id: build-base-image
       uses: redhat-actions/buildah-build@v2
