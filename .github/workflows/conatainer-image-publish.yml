@@ -21,7 +21,19 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
     
-    - name: Setze ICINGA Zugangsdaten
+    - name: Checkout grafana repo
+      uses: actions/checkout@v4
+      with:
+        repository: Mikesch-mp/icingaweb2-module-grafana
+        path: grafana
+
+    - name: Checkout nagvis repo
+      uses: actions/checkout@v4
+      with:
+        repository: Icinga/icingaweb2-module-nagvis
+        path: nagvis
+
+    - name: Repositority Configuration
       run: |
         sed -i "s|username=|username=${{ secrets.ICINGA_USERNAME }}|g" ./src/etc/yum.repos.d/ICINGA.repo
         sed -i "s|password=|password=${{ secrets.ICINGA_PASSWORD }}|g" ./src/etc/yum.repos.d/ICINGA.repo

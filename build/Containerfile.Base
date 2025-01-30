@@ -5,18 +5,14 @@
 #                                                                  #
 ####################################################################
 FROM registry.access.redhat.com/ubi8/ubi:latest
-# Prepare BaseOS #
-RUN rm /etc/yum.repos.d/ubi.repo
 
+##################
+# Prepare BaseOS #
+##################
 COPY ./src/ .
 
-RUN rpm --import https://packages.icinga.com/icinga.key;
-
-RUN dnf install \
-    --releasever 8 \
-    --setopt install_weak_deps=false \
-    --nodocs -y \
-    git
+RUN rm /etc/yum.repos.d/ubi.repo; \
+    rpm --import https://packages.icinga.com/icinga.key;
 
 ####################
 # Install Icinga 2 #
@@ -66,8 +62,8 @@ RUN dnf install \
     icinga-businessprocess \
     icinga-x509;
 
-RUN git clone https://github.com/Mikesch-mp/icingaweb2-module-grafana $INSTALL_ROOT/usr/share/icingaweb2/modules/grafana
-RUN git clone https://github.com/Icinga/icingaweb2-module-nagvis.git $INSTALL_ROOT/usr/share/icingaweb2/modules/nagvis
+COPY ./grafana/ $INSTALL_ROOT/usr/share/icingaweb2/modules/grafana
+COPY ./nagvis/ $INSTALL_ROOT/usr/share/icingaweb2/modules/nagvis
 
 RUN dnf --installroot $INSTALL_ROOT clean all;
 RUN rm -rf $INSTALL_ROOT/var/cache/bpf $INSTALL_ROOT/var/cache/dnf $INSTALL_ROOT/var/cache/ldconfig $INSTALL_ROOT/var/cache/private $INSTALL_ROOT/var/log/dnf* $INSTALL_ROOT/var/log/yum.* 

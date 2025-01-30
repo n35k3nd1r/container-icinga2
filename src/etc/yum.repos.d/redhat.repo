@@ -1,7 +1,7 @@
 [rhel-8-for-x86_64-baseos-rpms]
 name = Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)
 baseurl = https://cdn.redhat.com/content/dist/rhel8/$releasever/x86_64/baseos/os
-enabled = 1
+enabled = 0
 gpgcheck = 1
 gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 sslverify = 1
@@ -29,7 +29,7 @@ sslverifystatus = 1
 [codeready-builder-for-rhel-8-x86_64-rpms]
 name = Red Hat CodeReady Linux Builder for RHEL 8 x86_64 (RPMs)
 baseurl = https://cdn.redhat.com/content/dist/rhel8/$releasever/x86_64/codeready-builder/os
-enabled = 1
+enabled = 0
 gpgcheck = 1
 gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 sslverify = 1
