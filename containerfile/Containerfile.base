@@ -5,11 +5,15 @@
 #                                                                  #
 ####################################################################
 FROM registry.access.redhat.com/ubi8/ubi:latest
+ARG IMAGENAMEBASE
+ARG IMAGENAMEICINGA2
+ARG IMAGENAMEICINGADB
+ARG IMAGENAMEICINGAWEB
 
 ##################
 # Prepare BaseOS #
 ##################
-COPY ./src/Base/ .
+COPY ./src/$IMAGENAMEBASE/ .
 
 RUN rm /etc/yum.repos.d/ubi.repo; \
     rpm --import https://packages.icinga.com/icinga.key;
@@ -17,7 +21,7 @@ RUN rm /etc/yum.repos.d/ubi.repo; \
 ###################
 # Install Icinga2 #
 ###################
-ARG INSTALL_ROOT=/mnt/rootfs/Icinga2
+ARG INSTALL_ROOT=/mnt/rootfs/$IMAGENAMEICINGA2
 
 RUN mkdir -p $INSTALL_ROOT
 
@@ -35,10 +39,30 @@ RUN dnf install \
 RUN dnf --installroot $INSTALL_ROOT clean all; 
 RUN rm -rf $INSTALL_ROOT/var/cache/bpf $INSTALL_ROOT/var/cache/dnf $INSTALL_ROOT/var/cache/ldconfig $INSTALL_ROOT/var/cache/private $INSTALL_ROOT/var/log/dnf* $INSTALL_ROOT/var/log/yum.*
 
+####################
+# Install IcingaDB #
+####################
+ARG INSTALL_ROOT=/mnt/rootfs/$IMAGENAMEICINGADB
+
+RUN mkdir -p $INSTALL_ROOT
+
+RUN dnf install \
+    --installroot $INSTALL_ROOT \
+    --releasever 8 \
+    --setopt install_weak_deps=false \
+    --nodocs -y \
+    --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms \
+    coreutils-single \
+    glibc-minimal-langpack \
+    icingadb;
+
+RUN dnf --installroot $INSTALL_ROOT clean all; 
+RUN rm -rf $INSTALL_ROOT/var/cache/bpf $INSTALL_ROOT/var/cache/dnf $INSTALL_ROOT/var/cache/ldconfig $INSTALL_ROOT/var/cache/private $INSTALL_ROOT/var/log/dnf* $INSTALL_ROOT/var/log/yum.*
+
 #####################
 # Install IcingaWeb #
 #####################
-ARG INSTALL_ROOT=/mnt/rootfs/IcingaWeb
+ARG INSTALL_ROOT=/mnt/rootfs/$IMAGENAMEICINGAWEB
 
 RUN mkdir -p $INSTALL_ROOT
 
@@ -67,23 +91,3 @@ COPY ./nagvis/ $INSTALL_ROOT/usr/share/icingaweb2/modules/nagvis
 
 RUN dnf --installroot $INSTALL_ROOT clean all;
 RUN rm -rf $INSTALL_ROOT/var/cache/bpf $INSTALL_ROOT/var/cache/dnf $INSTALL_ROOT/var/cache/ldconfig $INSTALL_ROOT/var/cache/private $INSTALL_ROOT/var/log/dnf* $INSTALL_ROOT/var/log/yum.* 
-
-####################
-# Install IcingaDB #
-####################
-ARG INSTALL_ROOT=/mnt/rootfs/IcingaDB
-
-RUN mkdir -p $INSTALL_ROOT
-
-RUN dnf install \
-    --installroot $INSTALL_ROOT \
-    --releasever 8 \
-    --setopt install_weak_deps=false \
-    --nodocs -y \
-    --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms \
-    coreutils-single \
-    glibc-minimal-langpack \
-    icingadb;
-
-RUN dnf --installroot $INSTALL_ROOT clean all; 
-RUN rm -rf $INSTALL_ROOT/var/cache/bpf $INSTALL_ROOT/var/cache/dnf $INSTALL_ROOT/var/cache/ldconfig $INSTALL_ROOT/var/cache/private $INSTALL_ROOT/var/log/dnf* $INSTALL_ROOT/var/log/yum.*
