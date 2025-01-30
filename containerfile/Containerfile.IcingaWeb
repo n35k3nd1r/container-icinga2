@@ -5,21 +5,23 @@
 #                                                                         #
 ###########################################################################
 FROM scratch
-ARG MAINRAINER
+ARG IMAGENAME
+ARG BASEIMAGE
+ARG MAINTAINER
 ARG VENDOR
 ARG VERSION
 ARG RELEASE
 
-LABEL name="IcingaWeb" \
-    maintainer=$MAINRAINER \
+LABEL name=$IMAGENAME \
+    maintainer=$MAINTAINER \
     vendor=$VENDOR \
     version=$VERSION \
     release=$RELEASE \
-    summary="IcingaWeb" \
-    description="IcingaWeb"
+    summary=$IMAGENAME \
+    description=$IMAGENAME
 
-COPY --from=icinga/base:latest /mnt/rootfs/IcingaWeb /
-COPY ./src/IcingaWeb/ .
+COPY --from=$BASEIMAGE:latest /mnt/rootfs/$IMAGENAME /
+COPY ./src/$IMAGENAME/ .
 
 RUN mkdir /run/php-fpm; \
     chown -R apache:apache \

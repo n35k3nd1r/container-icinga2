@@ -6,10 +6,10 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME_BASE: ${{ github.repository }}/base
-  IMAGE_NAME_ICINGA2: ${{ github.repository }}/Icinga2
-  IMAGE_NAME_ICINGADB: ${{ github.repository }}/IcingaDB
-  IMAGE_NAME_ICINGAWEB: ${{ github.repository }}/IcingaWeb
+  IMAGE_NAME_BASE: base
+  IMAGE_NAME_ICINGA2: Icinga2
+  IMAGE_NAME_ICINGADB: IcingaDB
+  IMAGE_NAME_ICINGAWEB: IcingaWeb
   MAINTAINER: alexander.plate@axalon.ch
   VENDOR: Axalon GmbH
   VERSION: ${{ github.run_number }}
@@ -50,7 +50,7 @@ jobs:
       id: build-base-image
       uses: redhat-actions/buildah-build@v2
       with:
-        image: ${{ env.IMAGE_NAME_BASE }}
+        image: ${{ github.repository }}/${{ env.IMAGE_NAME_BASE }}
         tags: latest
         containerfiles: |
           ./containerfile/Containerfile.Base
@@ -59,11 +59,13 @@ jobs:
       id: build-icinga2-image
       uses: redhat-actions/buildah-build@v2
       with:
-        image: ${{ env.IMAGE_NAME_ICINGA2 }}
+        image: ${{ github.repository }}/${{ env.IMAGE_NAME_ICINGA2 }}
         tags: latest ${{ github.sha }}
         containerfiles: |
           ./containerfile/Containerfile.Icinga2
         build-args: |
+          IMAGENAME=${{ env.IMAGE_NAME_ICINGA2 }}
+          BASEIMAGE=${{ env.IMAGE_NAME_BASE }}
           MAINTAINER=${{ env.MAINTAINER }}
           VENDOR=${{ env.VENDOR }}
           VERSION=${{ env.VERSION }}
@@ -73,11 +75,13 @@ jobs:
       id: build-icingadb-image
       uses: redhat-actions/buildah-build@v2
       with:
-        image: ${{ env.IMAGE_NAME_ICINGADB }}
+        image: ${{ github.repository }}/${{ env.IMAGE_NAME_ICINGADB }}
         tags: latest ${{ github.sha }}
         containerfiles: |
           ./containerfile/Containerfile.IcingaDB
         build-args: |
+          IMAGENAME=${{ env.IMAGE_NAME_ICINGADB }}
+          BASEIMAGE=${{ env.IMAGE_NAME_BASE }}
           MAINTAINER=${{ env.MAINTAINER }}
           VENDOR=${{ env.VENDOR }}
           VERSION=${{ env.VERSION }}
@@ -87,11 +91,13 @@ jobs:
       id: build-icingaweb-image
       uses: redhat-actions/buildah-build@v2
       with:
-        image: ${{ env.IMAGE_NAME_ICINGAWEB }}
+        image: ${{ github.repository }}/${{ env.IMAGE_NAME_ICINGAWEB }}
         tags: latest ${{ github.sha }}
         containerfiles: |
           ./containerfile/Containerfile.IcingaWeb
         build-args: |
+          IMAGENAME=${{ env.IMAGE_NAME_ICINGAWEB }}
+          BASEIMAGE=${{ env.IMAGE_NAME_BASE }}
           MAINTAINER=${{ env.MAINTAINER }}
           VENDOR=${{ env.VENDOR }}
           VERSION=${{ env.VERSION }}

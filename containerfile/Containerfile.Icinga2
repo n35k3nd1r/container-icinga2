@@ -5,21 +5,23 @@
 #                                                                    #
 ######################################################################
 FROM scratch
-ARG MAINRAINER
+ARG IMAGENAME
+ARG BASEIMAGE
+ARG MAINTAINER
 ARG VENDOR
 ARG VERSION
 ARG RELEASE
 
-LABEL name="Icinga2" \
-    maintainer=$MAINRAINER \
+LABEL name=$IMAGENAME \
+    maintainer=$MAINTAINER \
     vendor=$VENDOR \
     version=$VERSION \
     release=$RELEASE \
-    summary="Icinga2" \
-    description="Icinga2"
+    summary=$IMAGENAME \
+    description=$IMAGENAME
 
-COPY --from=icinga/base:latest /mnt/rootfs/Icinga2 /
-COPY ./src/Icinga2/ .
+COPY --from=$BASEIMAGE:latest /mnt/rootfs/$IMAGENAME /
+COPY ./src/$IMAGENAME/ .
 
 RUN mkdir /run/icinga2; \
     chown -R icinga:icinga \

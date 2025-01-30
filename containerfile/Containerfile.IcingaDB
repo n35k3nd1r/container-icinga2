@@ -5,20 +5,22 @@
 #                                                                         #
 ###########################################################################
 FROM scratch
-ARG MAINRAINER
+ARG IMAGENAME
+ARG BASEIMAGE
+ARG MAINTAINER
 ARG VENDOR
 ARG VERSION
 ARG RELEASE
 
-LABEL name="IcingaDB" \
-    maintainer=$MAINRAINER \
+LABEL name=$IMAGENAME \
+    maintainer=$MAINTAINER \
     vendor=$VENDOR \
     version=$VERSION \
     release=$RELEASE \
-    summary="IcingaDB" \
-    description="IcingaDB"
+    summary=$IMAGENAME \
+    description=$IMAGENAME
 
-COPY --from=icinga/base:latest /mnt/rootfs/IcingaDB /
-COPY ./src/IcingaDB/ .
+COPY --from=$BASEIMAGE:latest /mnt/rootfs/$IMAGENAME /
+COPY ./src/$IMAGENAME/ .
 
 CMD icingadb
