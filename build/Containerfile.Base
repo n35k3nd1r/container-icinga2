@@ -5,17 +5,18 @@
 #                                                                  #
 ####################################################################
 FROM registry.access.redhat.com/ubi8/ubi:latest
+# Prepare BaseOS #
+RUN rm /etc/yum.repos.d/ubi.repo
+
+COPY ./src/ .
+
+RUN rpm --import https://packages.icinga.com/icinga.key;
 
 RUN dnf install \
     --releasever 8 \
     --setopt install_weak_deps=false \
     --nodocs -y \
-    git \
-    https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm 
-
-COPY build/ICINGA-release.repo /etc/yum.repos.d/ICINGA-release.repo
-
-RUN rpm --import https://packages.icinga.com/icinga.key;
+    git
 
 ####################
 # Install Icinga 2 #

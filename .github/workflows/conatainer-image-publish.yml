@@ -23,8 +23,10 @@ jobs:
     
     - name: Setze ICINGA Zugangsdaten
       run: |
-        sed -i "s|username=|username=${{ secrets.ICINGA_USERNAME }}|g" ./build/ICINGA-release.repo
-        sed -i "s|password=|password=${{ secrets.ICINGA_PASSWORD }}|g" ./build/ICINGA-release.repo
+        sed -i "s|username=|username=${{ secrets.ICINGA_USERNAME }}|g" ./src/etc/yum.repos.d/ICINGA.repo
+        sed -i "s|password=|password=${{ secrets.ICINGA_PASSWORD }}|g" ./src/etc/yum.repos.d/ICINGA.repo
+        sed -i "s|username=|username=${{ secrets.RH_USERNAME  }}|g" ./src/etc/yum.repos.d/redhat.repo
+        sed -i "s|password=|password=${{ secrets.RH_PASSWORD  }}|g" ./src/etc/yum.repos.d/redhat.repo
     
     - name: Build Image
       id: build-base-image
