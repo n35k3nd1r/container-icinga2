@@ -10,15 +10,25 @@ ARG VENDOR
 ARG VERSION
 ARG RELEASE
 
-LABEL name="Icinga DB" \
+LABEL name="IcingaWeb" \
     maintainer=$MAINRAINER \
     vendor=$VENDOR \
     version=$VERSION \
     release=$RELEASE \
-    summary="Icinga DB" \
-    description="Icinga DB"
+    summary="IcingaWeb" \
+    description="IcingaWeb"
 
-COPY --from=icinga/base:latest /mnt/rootfs/icinga-db /
-COPY ./icinga_db/config.yml /etc/icingadb/config.yml
+COPY --from=icinga/base:latest /mnt/rootfs/IcingaWeb /
+COPY ./src/IcingaWeb/ .
 
-CMD icingadb
+RUN mkdir /run/php-fpm; \
+    chown -R apache:apache \
+    /run/php-fpm \
+    /etc/php-fpm.conf \
+    /etc/icingaweb2/; \
+    pecl install imagick; \
+    echo extension=imagick.so >> /etc/php.ini;
+
+USER apache
+
+CMD php-fpm

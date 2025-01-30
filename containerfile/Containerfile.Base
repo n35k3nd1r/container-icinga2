@@ -9,15 +9,15 @@ FROM registry.access.redhat.com/ubi8/ubi:latest
 ##################
 # Prepare BaseOS #
 ##################
-COPY ./src/ .
+COPY ./src/Base/ .
 
 RUN rm /etc/yum.repos.d/ubi.repo; \
     rpm --import https://packages.icinga.com/icinga.key;
 
-####################
-# Install Icinga 2 #
-####################
-ARG INSTALL_ROOT=/mnt/rootfs/icinga-2
+###################
+# Install Icinga2 #
+###################
+ARG INSTALL_ROOT=/mnt/rootfs/Icinga2
 
 RUN mkdir -p $INSTALL_ROOT
 
@@ -35,10 +35,10 @@ RUN dnf install \
 RUN dnf --installroot $INSTALL_ROOT clean all; 
 RUN rm -rf $INSTALL_ROOT/var/cache/bpf $INSTALL_ROOT/var/cache/dnf $INSTALL_ROOT/var/cache/ldconfig $INSTALL_ROOT/var/cache/private $INSTALL_ROOT/var/log/dnf* $INSTALL_ROOT/var/log/yum.*
 
-##########################
-# Install Icinga PHP FPM #
-##########################
-ARG INSTALL_ROOT=/mnt/rootfs/php
+#####################
+# Install IcingaWeb #
+#####################
+ARG INSTALL_ROOT=/mnt/rootfs/IcingaWeb
 
 RUN mkdir -p $INSTALL_ROOT
 
@@ -68,10 +68,10 @@ COPY ./nagvis/ $INSTALL_ROOT/usr/share/icingaweb2/modules/nagvis
 RUN dnf --installroot $INSTALL_ROOT clean all;
 RUN rm -rf $INSTALL_ROOT/var/cache/bpf $INSTALL_ROOT/var/cache/dnf $INSTALL_ROOT/var/cache/ldconfig $INSTALL_ROOT/var/cache/private $INSTALL_ROOT/var/log/dnf* $INSTALL_ROOT/var/log/yum.* 
 
-#####################
-# Install Icinga DB #
-#####################
-ARG INSTALL_ROOT=/mnt/rootfs/icinga-db
+####################
+# Install IcingaDB #
+####################
+ARG INSTALL_ROOT=/mnt/rootfs/IcingaDB
 
 RUN mkdir -p $INSTALL_ROOT
 
@@ -87,9 +87,3 @@ RUN dnf install \
 
 RUN dnf --installroot $INSTALL_ROOT clean all; 
 RUN rm -rf $INSTALL_ROOT/var/cache/bpf $INSTALL_ROOT/var/cache/dnf $INSTALL_ROOT/var/cache/ldconfig $INSTALL_ROOT/var/cache/private $INSTALL_ROOT/var/log/dnf* $INSTALL_ROOT/var/log/yum.*
-
-##################################################################################
-#ARG ICINGA_WEB_BASE=/mnt/rootfs/icinga-web
-#ARG ICINGA_DB_BASE=/mnt/rootfs/icinga-db
-#ARG ICINGA_WEB_DB_BASE=/mnt/rootfs/icinga-web-db
-#ARG ICINGA_DIRECTOR_BASE=/mnt/rootfs/icinga-director

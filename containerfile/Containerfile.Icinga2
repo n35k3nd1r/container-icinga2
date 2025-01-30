@@ -10,17 +10,16 @@ ARG VENDOR
 ARG VERSION
 ARG RELEASE
 
-LABEL name="Icinga 2" \
+LABEL name="Icinga2" \
     maintainer=$MAINRAINER \
     vendor=$VENDOR \
     version=$VERSION \
     release=$RELEASE \
-    summary="Icinga 2" \
-    description="Icinga 2"
+    summary="Icinga2" \
+    description="Icinga2"
 
-COPY --from=icinga/base:latest /mnt/rootfs/icinga-2 /
-COPY ./icinga_master/include/ /usr/share/icinga2/include/
-COPY ./icinga_master/icinga2/ /etc/icinga2/
+COPY --from=icinga/base:latest /mnt/rootfs/Icinga2 /
+COPY ./src/Icinga2/ .
 
 RUN mkdir /run/icinga2; \
     chown -R icinga:icinga \

@@ -1,0 +1,137 @@
+name: Build and Push Image
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_BASE: ${{ github.repository }}/base
+  IMAGE_NAME_ICINGA2: ${{ github.repository }}/Icinga2
+  IMAGE_NAME_ICINGADB: ${{ github.repository }}/IcingaDB
+  IMAGE_NAME_ICINGAWEB: ${{ github.repository }}/IcingaWeb
+  MAINTAINER: alexander.plate@axalon.ch
+  VENDOR: Axalon GmbH
+  VERSION: ${{ github.run_number }}
+  RELEASE: 1
+
+jobs:
+  build:
+    name: Build and push image
+    runs-on: ubi8  # Self-hosted Runner nutzen 
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Checkout grafana repo
+      uses: actions/checkout@v4
+      with:
+        repository: Mikesch-mp/icingaweb2-module-grafana
+        path: grafana
+
+    - name: Checkout nagvis repo
+      uses: actions/checkout@v4
+      with:
+        repository: Icinga/icingaweb2-module-nagvis
+        path: nagvis
+
+    - name: Repositority Configuration
+      run: |
+        sed -i "s|username=|username=${{ secrets.ICINGA_USERNAME }}|g" ./src/etc/yum.repos.d/ICINGA.repo
+        sed -i "s|password=|password=${{ secrets.ICINGA_PASSWORD }}|g" ./src/etc/yum.repos.d/ICINGA.repo
+        echo "${{ secrets.RH_CLIENT_KEY }}" | tee ./src/etc/pki/entitlement/client-key.pem > /dev/null
+    
+    - name: Build Base Image
+      id: build-base-image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: ${{ env.IMAGE_NAME_BASE }}
+        tags: latest
+        containerfiles: |
+          ./containerfile/Containerfile.Base
+
+    - name: Build Icinga2 Image
+      id: build-icinga2-image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: ${{ env.IMAGE_NAME_ICINGA2 }}
+        tags: latest ${{ github.sha }}
+        containerfiles: |
+          ./containerfile/Containerfile.Icinga2
+        build-args: |
+          MAINTAINER=${{ env.MAINTAINER }}
+          VENDOR=${{ env.VENDOR }}
+          VERSION=${{ env.VERSION }}
+          RELEASE=${{ env.RELEASE }}
+
+    - name: Build IcingaDB Image
+      id: build-icingadb-image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: ${{ env.IMAGE_NAME_ICINGADB }}
+        tags: latest ${{ github.sha }}
+        containerfiles: |
+          ./containerfile/Containerfile.IcingaDB
+        build-args: |
+          MAINTAINER=${{ env.MAINTAINER }}
+          VENDOR=${{ env.VENDOR }}
+          VERSION=${{ env.VERSION }}
+          RELEASE=${{ env.RELEASE }}
+
+    - name: Build IcingaWeb Image
+      id: build-icingaweb-image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: ${{ env.IMAGE_NAME_ICINGAWEB }}
+        tags: latest ${{ github.sha }}
+        containerfiles: |
+          ./containerfile/Containerfile.IcingaWeb
+        build-args: |
+          MAINTAINER=${{ env.MAINTAINER }}
+          VENDOR=${{ env.VENDOR }}
+          VERSION=${{ env.VERSION }}
+          RELEASE=${{ env.RELEASE }}
+          
+    - name: Push Icinga2 To Registry
+      id: push-icinga2-to-registry
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ steps.build-icinga2-image.outputs.image }}
+        tags: ${{ steps.build-icinga2-image.outputs.tags }}
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Push IcingaDB To Registry
+      id: push-icingadb-to-registry
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ steps.build-icingadb-image.outputs.image }}
+        tags: ${{ steps.build-icingadb-image.outputs.tags }}
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push IcingaWeb To Registry
+      id: push-icingaweb-to-registry
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ steps.build-icingaweb-image.outputs.image }}
+        tags: ${{ steps.build-icingaweb-image.outputs.tags }}
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Print Icinga2 image url
+      run: echo "Image pushed to ${{ steps.push-icinga2-to-registry.outputs.registry-paths }}"
+
+    - name: Print IcingaDB image url
+      run: echo "Image pushed to ${{ steps.push-icingadb-to-registry.outputs.registry-paths }}"
+
+    - name: Print IcingaWeb image url
+      run: echo "Image pushed to ${{ steps.push-icingaweb-to-registry.outputs.registry-paths }}"
