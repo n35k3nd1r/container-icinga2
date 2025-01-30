@@ -1,0 +1,24 @@
+###########################################################################
+#                                                                         #
+# Containerfile for Icinga DB Web based on RHEL8 (UBI8) with micro Images #
+# Maintainer: Alexander Plate (alexander.plate@axalon.ch)                 #
+#                                                                         #
+###########################################################################
+FROM scratch
+ARG MAINRAINER
+ARG VENDOR
+ARG VERSION
+ARG RELEASE
+
+LABEL name="Icinga DB" \
+    maintainer=$MAINRAINER \
+    vendor=$VENDOR \
+    version=$VERSION \
+    release=$RELEASE \
+    summary="Icinga DB" \
+    description="Icinga DB"
+
+COPY --from=icinga/base:latest /mnt/rootfs/icinga-db /
+COPY ./icinga_db/config.yml /etc/icingadb/config.yml
+
+CMD icingadb

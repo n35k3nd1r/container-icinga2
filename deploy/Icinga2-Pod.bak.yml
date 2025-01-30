@@ -1,0 +1,102 @@
+apiVersion: v1 
+kind: Pod
+metadata:
+  name: icinga2
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    ports:
+    - containerPort: 8080
+      hostPort: 8080
+    volumeMounts:
+    - name: contents
+      mountPath: /var/www/html/
+    - name: nginx-config
+      mountPath: /etc/nginx/conf.d/default.conf
+      subPath: nginx.conf
+
+  - name: phpfpm
+    image: php:fpm-alpine
+    volumeMounts:
+    - name: contents
+      mountPath: /var/www/html/
+
+  - name: icinga2-redis
+    image:  redis
+    volumeMounts:
+    - name: redis-vol
+      mountPath: /data
+
+  - name: icinga2-mariadb
+    image:  mariadb
+    env:
+    - name: MARIADB_ROOT_PASSWORD
+      value: "my-secret-pw"
+    - name: MARIADB_DATABASE
+      value: "icingadb"
+    - name: MARIADB_USER
+      value: "icingadb"
+    - name: MARIADB_PASSWORD
+      value: "123456"
+    - name: MARIADB_AUTO_UPGRADE
+      value: "1"
+    - name: MARIADB_DISABLE_UPGRADE_BACKUP
+      value: "1"
+    volumeMounts:
+    - name: mariadb-vol
+      mountPath: /var/lib/mysql
+      
+  - name: icinga2-master
+    image:  icinga/icinga2/base
+    volumeMounts:
+    - name: icinga-conf-vol
+      mountPath: "/etc/icinga2/icinga2.conf"
+      subPath: icinga2.conf
+    - name: icinga-conf-vol
+      mountPath: "/etc/icinga2/constants.conf"
+      subPath: constants.conf
+    - name: icinga-conf-vol
+      mountPath: "/etc/icinga2/zones.conf"
+      subPath: zones.conf
+    - name: api-conf-vol
+      mountPath: "/etc/icinga2/features-enabled/api.conf"
+      subPath: api.conf
+    - name: api-conf-vol
+      mountPath: "/etc/icinga2/conf.d/api-users.conf"
+      subPath: api-users.conf
+    - name: ca-conf-vol
+      mountPath: "/var/lib/icinga2/certs/ca.crt"
+      subPath: ca.crt
+    - name: ca-conf-vol
+      mountPath: "/var/lib/icinga2/ca/"
+    - name: ssl-conf-vol
+      mountPath: "/var/lib/icinga2/certs/icinga2-master.crt"
+      subPath: icinga2-master.crt
+    - name: ssl-conf-vol
+      mountPath: "/var/lib/icinga2/certs/icinga2-master.key"
+      subPath: icinga2-master.key
+    - name: data-vol
+      mountPath: "/opt/icinga/tmp-test/"
+  volumes:
+  - name: icinga-conf-vol
+    configMap:
+      name: icinga-conf
+  - name: api-conf-vol
+    configMap:
+      name: api-conf
+  - name: ca-conf-vol
+    configMap:
+      name: ca-conf
+  - name: ssl-conf-vol
+    configMap:
+      name: ssl-conf
+  - name: data-vol
+    persistentVolumeClaim:
+      claimName: data
+  - name: mariadb-vol
+    persistentVolumeClaim:
+      claimName: mariadb-data
+  - name: redis-vol
+    persistentVolumeClaim:
+      claimName: redis-data

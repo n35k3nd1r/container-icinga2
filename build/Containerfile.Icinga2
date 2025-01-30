@@ -1,50 +1,33 @@
-FROM registry.access.redhat.com/ubi8/ubi:latest as icinga2-base
-
-RUN dnf install \
-    --releasever 8 \
-    --setopt install_weak_deps=false \
-    --nodocs -y \
-    https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm 
-
-RUN mkdir -p /mnt/rootfs
-
-COPY ICINGA-release.repo /etc/yum.repos.d/ICINGA-release.repo
-
-RUN rpm --import https://packages.icinga.com/icinga.key;
-
-RUN dnf install \
-    --installroot /mnt/rootfs \
-    --releasever 8 \
-    --setopt install_weak_deps=false \
-    --nodocs -y \
-    --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms \
-    coreutils-single \
-    glibc-minimal-langpack \
-    icinga2 \
-    nagios-plugins-all;
-
-RUN dnf --installroot /mnt/rootfs clean all; 
-
-RUN mkdir /mnt/rootfs/run/icinga2;
-
-RUN chown 999 /mnt/rootfs/run/icinga2;
-
-RUN rm -rf /mnt/rootfs/var/cache/bpf /mnt/rootfs/var/cache/dnf /mnt/rootfs/var/cache/ldconfig /mnt/rootfs/var/cache/private /mnt/rootfs/var/log/dnf* /mnt/rootfs/var/log/yum.*
-
-##################################################################################
-
+######################################################################
+#                                                                    #
+# Containerfile for Icinga 2 based on RHEL8 (UBI8) with micro Images #
+# Maintainer: Alexander Plate (alexander.plate@axalon.ch)            #
+#                                                                    #
+######################################################################
 FROM scratch
+ARG MAINRAINER
+ARG VENDOR
+ARG VERSION
+ARG RELEASE
 
-COPY --from=icinga2-base /mnt/rootfs/ /
+LABEL name="Icinga 2" \
+    maintainer=$MAINRAINER \
+    vendor=$VENDOR \
+    version=$VERSION \
+    release=$RELEASE \
+    summary="Icinga 2" \
+    description="Icinga 2"
 
-LABEL name="Icinga2" \
-      maintainer="alexander.plate@axalon.ch" \
-      vendor="Axalon GmbH" \
-      version="1" \
-      release="1" \
-      summary="Icinga2" \
-      description="Icinga2"
+COPY --from=icinga/base:latest /mnt/rootfs/icinga-2 /
+COPY ./icinga_master/include/ /usr/share/icinga2/include/
+COPY ./icinga_master/icinga2/ /etc/icinga2/
 
-CMD /bin/bash
+RUN mkdir /run/icinga2; \
+    chown -R icinga:icinga \
+    /run/icinga2 \
+    /usr/share/icinga2/include/ \
+    /etc/icinga2/; \
+    setcap "cap_net_admin,cap_net_raw+p" /usr/bin/ping;
 
-
+USER icinga
+CMD icinga2 daemon
