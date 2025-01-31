@@ -14,7 +14,6 @@ ARG IMAGEURL
 ARG REPOURL
 ARG VERSION
 ARG REVISION
-ARG BUILDDATE
 ARG LICENSE
 ARG LICENSENOTE
 
@@ -26,7 +25,6 @@ LABEL org.opencontainers.image.title=$IMAGENAME \
     org.opencontainers.image.source=$REPOURL \
     org.opencontainers.image.version=$VERSION \
     org.opencontainers.image.revision=$REVISION \
-    org.opencontainers.image.created=$BUILDDATE \
     org.opencontainers.image.licenses=$LICENSE \
     org.opencontainers.image.license_note=$LICENSENOTE
 

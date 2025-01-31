@@ -18,7 +18,6 @@ env:
   MAINTAINER: Alexander Plate <alexander.plate@axalon.ch>
   VERSION: 1
   REVISION: ${{ github.run_number }}
-  BUILDDATE: $(date -u +%Y-%m-%dT%H:%M:%SZ)
   LICENSE: GPL-2.0
   LICENSENOTE: Dieses Image enthält RHEL-Pakete, die nicht unter GPL-2.0 stehen. Sie dürfen nur mit einer gültigen RHEL-Subscription genutzt werden.
 
@@ -81,11 +80,10 @@ jobs:
           DESCRIPTION=${{ env.DESCRIPTION_ICINGA2 }}
           VENDOR=${{ env.VENDOR }}
           MAINTAINER=${{ env.MAINTAINER }}
-          IMAGEURL=${{ env.GITHUB }}/${{ github.repository }}/${{ env.IMAGE_NAME_ICINGA2 }}
-          REPOURL=${{ env.REGISTRY }}/${{ github.repository }}
+          IMAGEURL=${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME_ICINGAWEB }}
+          REPOURL=${{ env.GITHUB }}/${{ github.repository }}
           VERSION=${{ env.VERSION }}
           REVISION=${{ env.REVISION }}
-          BUILDDATE=${{ env.BUILDDATE }}
           LICENSE=${{ env.LICENSE }}
           LICENSENOTE=${{ env.LICENSENOTE }}
 
@@ -103,11 +101,10 @@ jobs:
           DESCRIPTION=${{ env.DESCRIPTION_ICINGADB }}
           VENDOR=${{ env.VENDOR }}
           MAINTAINER=${{ env.MAINTAINER }}
-          IMAGEURL=${{ env.GITHUB }}/${{ github.repository }}/${{ env.IMAGE_NAME_ICINGADB }}
-          REPOURL=${{ env.REGISTRY }}/${{ github.repository }}
+          IMAGEURL=${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME_ICINGAWEB }}
+          REPOURL=${{ env.GITHUB }}/${{ github.repository }}
           VERSION=${{ env.VERSION }}
           REVISION=${{ env.REVISION }}
-          BUILDDATE=${{ env.BUILDDATE }}
           LICENSE=${{ env.LICENSE }}
           LICENSENOTE=${{ env.LICENSENOTE }}
 
@@ -125,11 +122,10 @@ jobs:
           DESCRIPTION=${{ env.DESCRIPTION_ICINGAWEB }}
           VENDOR=${{ env.VENDOR }}
           MAINTAINER=${{ env.MAINTAINER }}
-          IMAGEURL=${{ env.GITHUB }}/${{ github.repository }}/${{ env.IMAGE_NAME_ICINGAWEB }}
-          REPOURL=${{ env.REGISTRY }}/${{ github.repository }}
+          IMAGEURL=${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME_ICINGAWEB }}
+          REPOURL=${{ env.GITHUB }}/${{ github.repository }}
           VERSION=${{ env.VERSION }}
           REVISION=${{ env.REVISION }}
-          BUILDDATE=${{ env.BUILDDATE }}
           LICENSE=${{ env.LICENSE }}
           LICENSENOTE=${{ env.LICENSENOTE }}
 
