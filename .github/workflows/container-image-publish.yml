@@ -5,15 +5,22 @@ on:
       - main
 
 env:
+  GITHUB: https://github.com
   REGISTRY: ghcr.io
   IMAGE_NAME_BASE: base
   IMAGE_NAME_ICINGA2: icinga-2
   IMAGE_NAME_ICINGADB: icinga-db
   IMAGE_NAME_ICINGAWEB: icinga-web
-  MAINTAINER: alexander.plate@axalon.ch
+  DESCRIPTION_ICINGA2: Container Image for ICINGA 2 Monitoring Masters & Satellites
+  DESCRIPTION_ICINGADB: Container Image for ICINGA DB Daemon
+  DESCRIPTION_ICINGAWEB: Container Image for ICINGA SB Web PHP-FPM
   VENDOR: Axalon GmbH
-  VERSION: ${{ github.run_number }}
-  RELEASE: 1
+  MAINTAINER: Alexander Plate <alexander.plate@axalon.ch>
+  VERSION: 1
+  REVISION: ${{ github.run_number }}
+  BUILDDATE: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+  LICENSE: GPL-2.0
+  LICENSENOTE: Dieses Image enthält RHEL-Pakete, die nicht unter GPL-2.0 stehen. Sie dürfen nur mit einer gültigen RHEL-Subscription genutzt werden.
 
 jobs:
   build:
@@ -71,10 +78,16 @@ jobs:
         build-args: |
           IMAGENAME=${{ env.IMAGE_NAME_ICINGA2 }}
           BASEIMAGE=${{ env.IMAGE_NAME_BASE }}
-          MAINTAINER=${{ env.MAINTAINER }}
+          DESCRIPTION=${{ env.DESCRIPTION_ICINGA2 }}
           VENDOR=${{ env.VENDOR }}
+          MAINTAINER=${{ env.MAINTAINER }}
+          IMAGEURL=${{ env.GITHUB }}/${{ github.repository }}/${{ env.IMAGE_NAME_ICINGA2 }}
+          REPOURL=${{ env.REGISTRY }}/${{ github.repository }}
           VERSION=${{ env.VERSION }}
-          RELEASE=${{ env.RELEASE }}
+          REVISION=${{ env.REVISION }}
+          BUILDDATE=${{ env.BUILDDATE }}
+          LICENSE=${{ env.LICENSE }}
+          LICENSENOTE=${{ env.LICENSENOTE }}
 
     - name: Build IcingaDB Image
       id: build-icingadb-image
@@ -87,10 +100,16 @@ jobs:
         build-args: |
           IMAGENAME=${{ env.IMAGE_NAME_ICINGADB }}
           BASEIMAGE=${{ env.IMAGE_NAME_BASE }}
-          MAINTAINER=${{ env.MAINTAINER }}
+          DESCRIPTION=${{ env.DESCRIPTION_ICINGADB }}
           VENDOR=${{ env.VENDOR }}
+          MAINTAINER=${{ env.MAINTAINER }}
+          IMAGEURL=${{ env.GITHUB }}/${{ github.repository }}/${{ env.IMAGE_NAME_ICINGADB }}
+          REPOURL=${{ env.REGISTRY }}/${{ github.repository }}
           VERSION=${{ env.VERSION }}
-          RELEASE=${{ env.RELEASE }}
+          REVISION=${{ env.REVISION }}
+          BUILDDATE=${{ env.BUILDDATE }}
+          LICENSE=${{ env.LICENSE }}
+          LICENSENOTE=${{ env.LICENSENOTE }}
 
     - name: Build IcingaWeb Image
       id: build-icingaweb-image
@@ -103,10 +122,17 @@ jobs:
         build-args: |
           IMAGENAME=${{ env.IMAGE_NAME_ICINGAWEB }}
           BASEIMAGE=${{ env.IMAGE_NAME_BASE }}
-          MAINTAINER=${{ env.MAINTAINER }}
+          DESCRIPTION=${{ env.DESCRIPTION_ICINGAWEB }}
           VENDOR=${{ env.VENDOR }}
+          MAINTAINER=${{ env.MAINTAINER }}
+          IMAGEURL=${{ env.GITHUB }}/${{ github.repository }}/${{ env.IMAGE_NAME_ICINGAWEB }}
+          REPOURL=${{ env.REGISTRY }}/${{ github.repository }}
           VERSION=${{ env.VERSION }}
-          RELEASE=${{ env.RELEASE }}
+          REVISION=${{ env.REVISION }}
+          BUILDDATE=${{ env.BUILDDATE }}
+          LICENSE=${{ env.LICENSE }}
+          LICENSENOTE=${{ env.LICENSENOTE }}
+
           
     - name: Push Icinga2 To Registry
       id: push-icinga2-to-registry

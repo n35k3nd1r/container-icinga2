@@ -7,18 +7,28 @@
 FROM scratch
 ARG IMAGENAME
 ARG BASEIMAGE
-ARG MAINTAINER
+ARG DESCRIPTION
 ARG VENDOR
+ARG MAINTAINER
+ARG IMAGEURL
+ARG REPOURL
 ARG VERSION
-ARG RELEASE
+ARG REVISION
+ARG BUILDDATE
+ARG LICENSE
+ARG LICENSENOTE
 
-LABEL name=$IMAGENAME \
-    maintainer=$MAINTAINER \
-    vendor=$VENDOR \
-    version=$VERSION \
-    release=$RELEASE \
-    summary=$IMAGENAME \
-    description=$IMAGENAME
+LABEL org.opencontainers.image.title=$IMAGENAME \
+    org.opencontainers.image.description=$DESCRIPTION \
+    org.opencontainers.image.vendor=$VENDOR \
+    org.opencontainers.image.authors=$MAINTAINER \
+    org.opencontainers.image.url=$IMAGEURL \
+    org.opencontainers.image.source=$REPOURL \
+    org.opencontainers.image.version=$VERSION \
+    org.opencontainers.image.revision=$REVISION \
+    org.opencontainers.image.created=$BUILDDATE \
+    org.opencontainers.image.licenses=$LICENSE \
+    org.opencontainers.image.license_note=$LICENSENOTE
 
 COPY --from=$BASEIMAGE:latest /mnt/rootfs/$IMAGENAME /
 COPY ./src/$IMAGENAME/ .
