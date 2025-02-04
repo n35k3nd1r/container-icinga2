@@ -37,7 +37,7 @@ jobs:
     - name: Checkout grafana repo
       uses: actions/checkout@v4
       with:
-        repository: Mikesch-mp/icingaweb2-module-grafana
+        repository: NETWAYS/icingaweb2-module-grafana
         path: grafana
 
     - name: Checkout nagvis repo
