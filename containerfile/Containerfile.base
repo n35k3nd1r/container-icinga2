@@ -89,5 +89,9 @@ RUN dnf install \
 COPY ./grafana/ $INSTALL_ROOT/usr/share/icingaweb2/modules/grafana
 COPY ./nagvis/ $INSTALL_ROOT/usr/share/icingaweb2/modules/nagvis
 
+RUN cd $INSTALL_ROOT/etc/icingaweb2/enabledModules; \
+ln -s ../../usr/share/icingaweb2/modules/grafana grafana; \
+ln -s ../../usr/share/icingaweb2/modules/nagvis nagvis;
+
 RUN dnf --installroot $INSTALL_ROOT clean all;
 RUN rm -rf $INSTALL_ROOT/var/cache/bpf $INSTALL_ROOT/var/cache/dnf $INSTALL_ROOT/var/cache/ldconfig $INSTALL_ROOT/var/cache/private $INSTALL_ROOT/var/log/dnf* $INSTALL_ROOT/var/log/yum.* 
